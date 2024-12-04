@@ -1,0 +1,109 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="container bg-dark text-white">
+    <div class="row">
+        <div class="col-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <label class="form-check-label lead" for="flexCheckDefault">
+                    Select all
+                </label>
+            </div>     
+        </div>
+        <div class="col-3">
+            <a href=""> <span class="text-dark text-white">Delete</span></a>
+        </div>
+    </div>
+</section>
+
+<section class="container" style="margin-bottom: 20px;">
+   {% if cart_items %}
+   {% for cart_item in cart_items %}
+   <div class="row border rounded mb-2" style="background-color: #ECF0F1;">
+       <div class="col-12">
+           <h4 class="text-dark"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="blue" class="bi bi-shop" viewBox="0 0 16 16">
+               <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5M4 15h3v-5H4zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zm3 0h-2v3h2z"/>
+             </svg> {{ product.shop }}</h4>
+       </div>
+       <hr>
+       <div class="col-md-1 d-flex flex-column justify-content-center">
+           <div class="form-check">
+               <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+               <label class="form-check-label" for="flexCheckDefault">
+               </label>
+           </div>
+       </div>
+       <div class="col-md-2 mb-2 d-flex flex-column justify-content-center">
+           <div class="card rounded">
+               <img src="{{ cart_item.product.image.url }}" class="card-img-top" alt="..." style="width: 100%; max-height: 20vh; object-fit: cover;">
+           </div>
+       </div>
+       <div class="col-md-4">
+           {{ cart_item.product.name }}
+       </div>
+       <div class="col-2 d-flex flex-column justify-content-end mb-2">
+        <input type="number" class="form-control" id="quantity" value="{{ cart_item.quantity }}">
+        </div>
+       
+       <div class="col-md-2 d-flex flex-column justify-content-end">
+           <h4 class="text-danger fw-bold" data-price="{{ product.price }}">Ksh {{ cart_item.get_total_price }}</h4>
+       </div>
+       <div class="col-md-1 d-flex flex-column justify-content-end mb-2">
+           <a href="{% url 'remove_from_cart' cart_item.product.id %}"> <span class="text-danger text-decoration-none fw-bold">Delete</span></a>
+       </div>
+   </div>
+   {% endfor %}
+   {% else %}
+    <div class="row">
+        <div class="col-12 d-flex flex-row justify-content-center">
+            <h2 class="text-dark">Ooops, Your cart is empty</h2>
+            
+       </div>
+       <div class="col-md-12 d-flex flex-row justify-content-start">
+          <a href="/" class="nav-link text-dark lead">Continue shopping</a>
+       </div>
+       <div class="col-12 h-50 d-flex flex-row justify-content-center">
+        <img src="{% static 'images/cart-empty.jpeg' %}" class="d-block w-50 c-img" alt="...">
+       </div>     
+    </div>
+    {% endif %}
+</section>
+
+<div style="height: 100px;"></div>
+<div class="container-fluid fixed-bottom p-2" style="background-color: #A0E7E5;">
+    <section class="container">
+        <div class="row d-flex flex-row justify-content-end mt-2">
+            <div class="col-6 d-flex flex-row justify-content-start">
+                <h4>Total </h4>
+            </div>
+            <div class="col-6 d-flex flex-row justify-content-end ">
+                <h4 id="total-amount" class="fw-bold text-danger"></h4>
+            </div>
+            
+            
+        </div>
+        <div class="row d-flex flex-row justify-content-end">
+            <div class="col-lg-6 col-6 d-flex flex-column justify-content-start mt-1  ">
+                <a class="nav-link w-100" href="/">Continue shopping</a>
+            </div>
+            <div class="col-lg-6 col-6 d-flex flex-row justify-content-end mb-1 ">
+                <a href="{% url 'checkout' %}" class="btn btn-warning btn-sm ">Checkout</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    let total = 0.00;
+    const prices = document.querySelectorAll('[data-price]');
+    prices.forEach(price => {
+        total += parseFloat(price.innerText.split(' ')[1]);
+    });
+    document.getElementById('total-amount').innerText = `Ksh ${total}`
+
+</script>
+
+{% endblock %}
