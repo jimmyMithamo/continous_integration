@@ -1,0 +1,108 @@
+{% extends 'website/account.html' %}
+{% load static %}
+{% block side_content %}
+<div>
+    {% if order_items %}
+        <h6 class="fw-bold text-center">My Orders</h6>
+        <div class="row fs-6">
+            <div class="col-md-12 d-flex flex-column justify-content-center">
+                <ul class="nav d-flex flex-row justify-content-evenly  ">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#" onclick="showContent('unpaid')">Unpaid</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showContent('inTransit')">In Transit</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showContent('completed')">Completed</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" tabindex="-1" aria-disabled="true" onclick="showContent('cancelled')">Cancelled</a>
+                    </li>
+                </ul>
+                <hr>
+                <div class="row fw-bold disabled">
+                    <div class="col-md-5">
+                        Product Info
+                    </div>
+                    <div class="col-md-4">
+                        Order Amount
+                    </div>
+                    <div class="col-md-3">Options</div>
+                </div>
+            </div>
+            
+            <!-- Content Sections -->
+            <div class="col-md-12" id="content-container">
+                <div id="unpaid" class="content-section fs-6 border row d-flex flex-row justify-content-center" style="display: block;">
+                    <div class="col-md-5">Order No</div>
+                    <div class="col-md-4">Order Date</div>
+                    <div class="col-md-3">Order Detail</div>
+                    <div class="row">
+                        {% for order in orders %}
+                        {% if order.status == 'UNPAID' %}
+                        <div class="col-5">
+                            <div class="col-1">{{ order.item }}</div>
+                            <div class="col-4">hello world</div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div id="inTransit" class="content-section" style="display: none;">
+                    <h3>In Transit Orders</h3>
+                    <p>List of orders in transit...</p>
+                </div>
+                <div id="completed" class="content-section" style="display: none;">
+                    <h3>Completed Orders</h3>
+                    <p>List of completed orders...</p>
+                </div>
+                <div id="cancelled" class="content-section" style="display: none;">
+                    <h3>Cancelled Orders</h3>
+                    <p>List of cancelled orders...</p>
+                </div>
+            </div>
+        </div>
+        {% for order_item in order_items %}
+       
+        {% endfor %}
+
+
+    {% else %}
+    <div class="row">
+        <div class="col-12 d-flex flex-row justify-content-center">
+            <h2 class="text-dark">Ooops, You have no orders</h2>     
+       </div> 
+       <div class="col-12 h-50 d-flex flex-row justify-content-center">
+        <img src="{% static 'images/no_orders.jpeg' %}" class="d-block w-50 c-img" alt="...">
+       </div>    
+       <div class="col-md-12 d-flex flex-row justify-content-start">
+        <a href="/" class="nav-link text-dark lead">Continue shopping</a>
+     </div> 
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function showContent(contentId) {
+        // Hide all content sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Show the selected content section
+        const selectedSection = document.getElementById(contentId);
+        if (selectedSection) {
+            selectedSection.style.display = 'block';
+        }
+
+        // Update active link
+        const links = document.querySelectorAll('.nav-link');
+        links.forEach(link => {
+            link.classList.remove('active');
+        });
+        document.querySelector(`[onclick="showContent('${contentId}')"]`).classList.add('active');
+    }
+</script>
+{% endblock %}
