@@ -6,6 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib import messages
+from django.utils import timezone
 
 
 # Create your views here.
@@ -250,7 +251,8 @@ def add_order(request):
             cart_item=cart_item,
             product=cart_item.product,
             quantity=cart_item.quantity,
-            price=cart_item.get_total_price()
+            price=cart_item.get_total_price(),
+            order_date=timezone.now()
         )
         order_item.save()
     messages.success(request, 'Order placed successfully')
