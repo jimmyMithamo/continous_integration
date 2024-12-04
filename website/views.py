@@ -118,7 +118,7 @@ def add_to_cart(request, id):
     cart = cart[0]
 
     # Check if the product is already in the cart
-    cart_item = CartItem.objects.filter(cart=cart, product=product)
+    cart_item = CartItem.objects.filter(cart=cart, product=product, processed=False)
     if cart_item.exists():
         # If multiple cart items exist for the same product, sum their quantities
         if cart_item.count() > 1:
