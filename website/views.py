@@ -241,7 +241,7 @@ def add_order(request):
     total = 0
     for cart_item in carts:
         total += cart_item.get_total_price()
-    order = Order(user=user, total_amount=total)
+    order = Order(user=user, total_amount=total,order_date=timezone.now())
     order.save()
     for cart_item in carts:
         cart_item.processed = True
@@ -252,7 +252,6 @@ def add_order(request):
             product=cart_item.product,
             quantity=cart_item.quantity,
             price=cart_item.get_total_price(),
-            order_date=timezone.now()
         )
         order_item.save()
     messages.success(request, 'Order placed successfully')
