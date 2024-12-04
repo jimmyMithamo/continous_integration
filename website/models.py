@@ -61,7 +61,7 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=ORDER_STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=10, choices=ORDER_STATUS_CHOICES, default='RECEIVED')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     address = models.CharField(max_length=255, default="No address provided")
     order_date = models.DateTimeField(default=timezone.now)
