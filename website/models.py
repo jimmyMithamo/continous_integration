@@ -54,7 +54,7 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     ORDER_STATUS_CHOICES = [
-        ('UNPAID', 'Unpaid'),
+        ('RECEIVED', 'Received'),
         ('In transit', 'In transit'),
         ('COMPLETED', 'Completed'),
         ('CANCELED', 'Canceled'),
@@ -64,6 +64,7 @@ class Order(models.Model):
     status = models.CharField(max_length=10, choices=ORDER_STATUS_CHOICES, default='PENDING')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     address = models.CharField(max_length=255, default="No address provided")
+    order_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'Order {self.id} - {self.user.username}'
