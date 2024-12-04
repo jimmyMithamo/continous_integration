@@ -1,73 +1,52 @@
 {% extends 'website/account.html' %}
 {% load static %}
 {% block side_content %}
+
 <div>
     {% if order_items %}
         <h6 class="fw-bold text-center">My Orders</h6>
-        <div class="row fs-6">
-            <div class="col-md-12 d-flex flex-column justify-content-center">
-                <ul class="nav d-flex flex-row justify-content-evenly  ">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#" onclick="showContent('unpaid')">Unpaid</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showContent('inTransit')">In Transit</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showContent('completed')">Completed</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" tabindex="-1" aria-disabled="true" onclick="showContent('cancelled')">Cancelled</a>
-                    </li>
-                </ul>
-                <hr>
-                <div class="row fw-bold disabled">
-                    <div class="col-md-5">
-                        Product Info
-                    </div>
-                    <div class="col-md-4">
-                        Order Amount
-                    </div>
-                    <div class="col-md-3">Options</div>
-                </div>
+        <hr>
+        <div class="container">
+            <div class="row fs-6 fw-bold disabled">
+                <div class="col-md-6">Product Info</div>
+                <div class="col-md-2">Order Amount</div>
+                <div class="col-md-2">Order Status</div>
+                <div class="col-md-2">Actions</div>   
             </div>
-            
-            <!-- Content Sections -->
-            <div class="col-md-12" id="content-container">
-                <div id="unpaid" class="content-section fs-6 border row d-flex flex-row justify-content-center" style="display: block;">
-                    <div class="col-md-5">Order No</div>
-                    <div class="col-md-4">Order Date</div>
-                    <div class="col-md-3">Order Detail</div>
-                    <div class="row">
-                        {% for order in orders %}
-                        {% if order.status == 'UNPAID' %}
-                        <div class="col-5">
-                            <div class="col-1">{{ order.item }}</div>
-                            <div class="col-4">hello world</div>
+                {% for order in orders %}
+                    <div class="row border-bottom-0 border">
+                        <div class="col-md-6 ">
+                            Order No. {{ order.id }}
                         </div>
-                        {% endif %}
-                        {% endfor %}
+                        <div class="col-md-6 ">
+                            order date : {{ order.date }}
+                        </div>
                     </div>
-                </div>
-                <div id="inTransit" class="content-section" style="display: none;">
-                    <h3>In Transit Orders</h3>
-                    <p>List of orders in transit...</p>
-                </div>
-                <div id="completed" class="content-section" style="display: none;">
-                    <h3>Completed Orders</h3>
-                    <p>List of completed orders...</p>
-                </div>
-                <div id="cancelled" class="content-section" style="display: none;">
-                    <h3>Cancelled Orders</h3>
-                    <p>List of cancelled orders...</p>
-                </div>
+                    
+                    {% for order_item in order_items %}
+                    {% if order_item.order_id == order.id %}
+                    <div class="row border mb-2">
+                        <div class="col-1 mt-1">
+                            <img src="{{ order_item.product.image.url }}" class="card-img-top" alt="..." style="height: 100%; width: 100%; object-fit: cover;">
+                        </div>
+                        <div class="col-5 mt-1">
+                            <div class="row">
+                                <div class="col-6">{{ order_item.product.name }}</div>
+                                <div class="col-6">{{ order_item.product.description }}</div>
+                            </div>
+                        </div>
+                        <div class="col-2 mt-1">{{ order_item.get_total_price }}</div>
+                        <div class="col-2 mt-1">{{ order.status }}</div>
+                        <div class="col-2 mt-1">
+                            <a href=""><div class="btn btn-success btn-sm">Track order</div></a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                {% endfor %}
+
             </div>
-        </div>
-        {% for order_item in order_items %}
-       
-        {% endfor %}
-
-
+    
     {% else %}
     <div class="row">
         <div class="col-12 d-flex flex-row justify-content-center">

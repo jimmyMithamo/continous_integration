@@ -184,17 +184,17 @@ def checkout(request):
     total = 0
     for cart in carts:
         total += cart.get_total_price()
-        print(cart.quantity)
     count = carts.count()
 
     context['total'] = total
     context['carts'] = carts
     context['count'] = count
     context['user'] = user
-
-
-    return render(request,'website/checkout.html', context)
-
+    if carts.exists():
+        return render(request,'website/checkout.html', context)
+    else:
+        messages.warning(request, 'No cart items found for this cart')
+        return redirect('cart')
 #view  order
 def account(request):
     user_id = request.session.get('user_id')
@@ -219,13 +219,7 @@ def password(request):
 def orders(request):
     user = User.objects.get(id=request.session.get('user_id'))
     orders = Order.objects.filter(user=user)
-    print(orders)
-    for order in orders:
-        print(order.items)
     order_items = OrderItem.objects.filter(order__in=orders)
-    for order in orders:
-        print(order.status)
-        
     
     context = {
         'orders': orders,
@@ -237,20 +231,20 @@ def add_order(request):
     user_id = request.session.get('user_id')
     user = User.objects.get(id=user_id)
     cart = Cart.objects.get(user=user)
-    carts = CartItem.objects.filter(cart=cart)
+    carts = CartItem.objects.filter(cart=cart, processed=False)
 
     if not carts.exists():
-        print("No cart items found for this cart")
-        return HttpResponse("No cart items found")
+        messages.warning(request, 'You dont have any items in your cart')
+        return redirect('cart')
 
     total = 0
     for cart_item in carts:
         total += cart_item.get_total_price()
-
     order = Order(user=user, total_amount=total)
     order.save()
     for cart_item in carts:
-        print(f"Creating OrderItem for {cart_item.product.name}")
+        cart_item.processed = True
+        cart_item.save()
         order_item = OrderItem(
             order=order,
             cart_item=cart_item,
@@ -259,10 +253,5 @@ def add_order(request):
             price=cart_item.get_total_price()
         )
         order_item.save()
-        print(f"OrderItem created: {order_item}")
-
-    # make cart_item processed
-    cart_item.processed = True
-    
-
+    messages.success(request, 'Order placed successfully')
     return redirect('orders')
