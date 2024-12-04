@@ -183,7 +183,7 @@ def remove_from_cart(request, id):
     cart = Cart.objects.get(user=user)
     product = Product.objects.get(id=id)
 
-    cart_item = CartItem.objects.get(cart=cart, product=product)
+    cart_item = CartItem.objects.get(cart=cart, product=product, processed=False)
     cart_item.delete()
     messages.success(request, 'Product removed from cart')
     return redirect('cart')
