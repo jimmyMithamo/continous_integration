@@ -23,5 +23,6 @@ urlpatterns = [
     path('email',views.email, name='email'),
     path('password',views.password, name='password'),
     path('order',views.orders, name='orders'),
-    path('add_order',views.add_order, name='add_order')
+    path('add_order',views.add_order, name='add_order'),
+    path('upload_image',views.upload_image, name='upload_image'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

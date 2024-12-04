@@ -1,6 +1,6 @@
 from urllib import request
 from django.shortcuts import render, HttpResponse, redirect
-from .models import Product, User, Cart, Order, CartItem, OrderItem
+from .models import Product, User, Cart, Order, CartItem, OrderItem, Profile
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
@@ -103,6 +103,23 @@ def signup(request):
     else:
         messages.error(request, 'Invalid request')
         return redirect('signup_page')
+
+def upload_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        try:
+            profile = Profile.objects.get(user=request.user)
+            profile.image = request.FILES['image']
+            profile.save()
+            messages.success(request, 'Profile image updated successfully.')
+        except Profile.DoesNotExist:
+            messages.error(request, 'Profile not found.')
+        return redirect('account')  
+    else:
+        messages.error(request, 'No image selected.')
+        return redirect('account') 
+
+
+
 
 def add_to_cart(request, id):
     status = request.session.get('logged_in', False)
