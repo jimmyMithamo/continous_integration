@@ -61,43 +61,35 @@ def login(request):
                 #transfer cart items to user
                 cart = Cart.objects.get(user=guest_user)
                 if cart:
-                    print('cart exists')
                     cart_items = CartItem.objects.filter(cart=cart)
                     #check if user has cart
                     user_cart = Cart.objects.filter(user=user)
-                    user_cart_items = CartItem.objects.filter(cart=user_cart[0])
+                    if user_cart:
+                        user_cart_items = CartItem.objects.filter(cart=user_cart[0])
+                    else:
+                        user_cart_items = []
                     if user_cart_items:
                         user_cart_products = [cart_item.product for cart_item in user_cart_items]
                     else:
                         user_cart_products = []
-                    print(user_cart_products)
                     if user_cart:
-                        print('user cart exists')
                         cart = user_cart[0]
                     else:
-                        print('cart does not exist')
                         cart = Cart(user=user)
                         cart.save()
                     if cart_items:
-                            print('cart items exist')
                             for cart_item in cart_items:
                                 if cart_item.product in user_cart_products:
-                                    print('product exists')
                                     user_cart_item = CartItem.objects.get(cart=cart, product=cart_item.product, processed=False)
-                                    print(user_cart_item.product)
                                     user_cart_item.quantity += cart_item.quantity
                                     user_cart_item.save()
                                     messages.success(request, 'A new item was added to existing product')
                                 else:
-                                    print('product does not exist')
                                     cart_item.cart = cart
                                     cart_item.save()
-                            print('cart items updated')
                     else:
-                        print('cart items do not exist')
-
+                        messages.warning(request, 'No cart items found for this cart')
                 guest_user.delete()
-                print('guest user deleted')
             request.session['guest_logged_in'] = False
             request.session['user_id'] = user.id
             request.session['username'] = user.first_name
@@ -108,7 +100,8 @@ def login(request):
             messages.error(request, 'Invalid username or password')
             return redirect('login_page')
     else:
-        return render(request, 'login.html')
+        messages.warning(request, 'Invalid request')
+        return render(request, 'website/login.html')
 
 
 
