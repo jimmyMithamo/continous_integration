@@ -1,6 +1,6 @@
 from urllib import request
 from django.shortcuts import render, HttpResponse, redirect
-from .models import Product, User, Cart, Order, CartItem, OrderItem, Profile, Guest_user
+from .models import Product, User, Cart, Order, CartItem, OrderItem, Profile
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
