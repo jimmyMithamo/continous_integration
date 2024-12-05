@@ -3,6 +3,14 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 
+#guest user model
+class Guest_user(models.Model):
+    id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=100)
+    def __str__(self):
+        return self.username
+
+
 
 # Create your models here.
 class Profile(models.Model):

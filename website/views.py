@@ -1,12 +1,13 @@
 from urllib import request
 from django.shortcuts import render, HttpResponse, redirect
-from .models import Product, User, Cart, Order, CartItem, OrderItem, Profile
+from .models import Product, User, Cart, Order, CartItem, OrderItem, Profile, Guest_user
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
+import uuid
 
 
 # Create your views here.
@@ -47,14 +48,60 @@ def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        guest_user = request.session.get('user_id')            
         
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             auth_login(request,user)
             request.session['logged_in'] = True
+            
+            if guest_user:
+                guest_user = User.objects.get(id=guest_user)
+                #transfer cart items to user
+                cart = Cart.objects.get(user=guest_user)
+                if cart:
+                    print('cart exists')
+                    cart_items = CartItem.objects.filter(cart=cart)
+                    #check if user has cart
+                    user_cart = Cart.objects.filter(user=user)
+                    user_cart_items = CartItem.objects.filter(cart=user_cart[0])
+                    if user_cart_items:
+                        user_cart_products = [cart_item.product for cart_item in user_cart_items]
+                    else:
+                        user_cart_products = []
+                    print(user_cart_products)
+                    if user_cart:
+                        print('user cart exists')
+                        cart = user_cart[0]
+                    else:
+                        print('cart does not exist')
+                        cart = Cart(user=user)
+                        cart.save()
+                    if cart_items:
+                            print('cart items exist')
+                            for cart_item in cart_items:
+                                if cart_item.product in user_cart_products:
+                                    print('product exists')
+                                    user_cart_item = CartItem.objects.get(cart=cart, product=cart_item.product, processed=False)
+                                    print(user_cart_item.product)
+                                    user_cart_item.quantity += cart_item.quantity
+                                    user_cart_item.save()
+                                    messages.success(request, 'A new item was added to existing product')
+                                else:
+                                    print('product does not exist')
+                                    cart_item.cart = cart
+                                    cart_item.save()
+                            print('cart items updated')
+                    else:
+                        print('cart items do not exist')
+
+                guest_user.delete()
+                print('guest user deleted')
+            request.session['guest_logged_in'] = False
             request.session['user_id'] = user.id
             request.session['username'] = user.first_name
+
             messages.success(request, 'You have been logged in successfully')
             return redirect('home')
         else:
@@ -91,15 +138,30 @@ def signup(request):
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
-        
+        #direct login
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Email already exists')
             return redirect('signup_page')
         
-        user = User(first_name=first_name, last_name=last_name, email=email ,username=username)
-        user.set_password(password)
-        user.save()
-        return redirect('login_page')
+        if request.session.get('logged_in') == False:
+            user = User(first_name=first_name, last_name=last_name, email=email ,username=username)
+            user.set_password(password)
+            user.save()
+            messages.success(request, 'Account created successfully')
+            return redirect('login_page')
+        else:
+            #get guest user and transform to real user
+            guest_user_id = request.session.get('user_id')
+            guest_user = User.objects.get(id=guest_user_id)        
+            guest_user.username = username
+            guest_user.email = email
+            guest_user.first_name = first_name
+            guest_user.last_name = last_name
+            guest_user.set_password(password)
+            guest_user.save()
+            messages.success(request, 'Account created successfully')
+            return redirect('login_page')
+        
     else:
         messages.error(request, 'Invalid request')
         return redirect('signup_page')
@@ -118,6 +180,12 @@ def upload_image(request):
         messages.error(request, 'No image selected.')
         return redirect('account') 
 
+#create guest cart
+def create_guest_user():
+    user = str('Guest_' + str(uuid.uuid4()))
+    guest_user = User.objects.create_user(username=user)
+    guest_user.save()
+    return guest_user
 
 
 
@@ -125,7 +193,13 @@ def add_to_cart(request, id):
     status = request.session.get('logged_in', False)
     product_id = request.session.get('product_id')
     if not status:
-        return HttpResponse("<script>alert('Please login to add to cart');window.location.href='/login_page';</script>")
+        guest_user = create_guest_user()
+        guest_user.save()
+        request.session['logged_in'] = True
+        request.session['guest_logged_in'] = True
+        request.session['user_id'] = guest_user.id
+        request.session['username'] = guest_user.username.split('_')[0]
+                
     
     user_id = request.session.get('user_id')
     user = User.objects.get(id=user_id)
@@ -159,11 +233,17 @@ def add_to_cart(request, id):
 def cart(request):
     status = request.session.get('logged_in', False)
     if not status:
-        return HttpResponse("<script>alert('Please login to view cart');window.location.href='/login_page';</script>")
+        #create guest cart
+        guest_user = create_guest_user()
+        guest_user.save()
+        request.session['logged_in'] = True
+        request.session['user_id'] = guest_user.id
+        request.session['username'] = guest_user.username.split('_')[0]
     
     user_id = request.session.get('user_id')
     user = User.objects.get(id=user_id)
     cart_items = CartItem.objects.filter(cart__user=user, processed=False)
+
     carts = Cart.objects.filter(user=user)
 
     context = {
@@ -174,30 +254,30 @@ def cart(request):
 
 #delete from cart function
 def remove_from_cart(request, id):
-    status = request.session.get('logged_in', False)
-    if not status:
-        return HttpResponse("<script>alert('Please login to delete from cart');window.location.href='/login_page';</script>")
-    
     user_id = request.session.get('user_id')
     user = User.objects.get(id=user_id)
     cart = Cart.objects.get(user=user)
     product = Product.objects.get(id=id)
-
-    cart_item = CartItem.objects.get(cart=cart, product=product, processed=False)
-    for cart_item in cart_item:
+    if cart:
+        cart_item = CartItem.objects.get(cart=cart, product=product, processed=False)
         cart_item.delete()
-    messages.success(request, 'Product removed from cart')
-    return redirect('cart')
+        messages.success(request, 'Product removed from cart')
+        return redirect('cart')
+    else:
+        messages.error(request, 'Cart not found')
+        return redirect('cart')
 
 #view for checkout
 def checkout(request):
-
     context = {
         'logged_in': request.session.get('logged_in', False),
         'user_id': request.session.get('user_id'),
         'username': request.session.get('username'),
     }
     user = User.objects.get(id=context['user_id'])
+    if user.username.startswith('Guest_'):
+        messages.error(request, 'Please login or create account to checkout')
+        return redirect('login_page')
     cart = Cart.objects.get(user=user)
     carts = CartItem.objects.filter(cart=cart, processed=False)
     total = 0
@@ -214,6 +294,13 @@ def checkout(request):
     else:
         messages.warning(request, 'No cart items found for this cart')
         return redirect('cart')
+
+#check for user existence
+def check_user(active_user):
+    if active_user.username.startswith('Guest_'):
+        return False
+    return True
+
 #view  order
 def account(request):
     user_id = request.session.get('user_id')
@@ -224,6 +311,7 @@ def account(request):
     return render(request, 'website/account.html',context)
 #view and edit address
 def address(request):
+
     return render(request, 'website/address.html')
 
 def phone_number(request):
@@ -237,14 +325,19 @@ def password(request):
 
 def orders(request):
     user = User.objects.get(id=request.session.get('user_id'))
-    orders = Order.objects.filter(user=user)
-    order_items = OrderItem.objects.filter(order__in=orders)
-    
-    context = {
-        'orders': orders,
-        'order_items': order_items
-    }   
-    return render(request, 'website/my_orders.html', context)    
+    user_exists = check_user(user)
+    if not user_exists:
+        messages.warning(request, 'Please login or create account to view orders')
+        return redirect('login_page')
+    else:
+        orders = Order.objects.filter(user=user)
+        order_items = OrderItem.objects.filter(order__in=orders)
+        
+        context = {
+            'orders': orders,
+            'order_items': order_items
+        }   
+        return render(request, 'website/my_orders.html', context)    
 
 def add_order(request):
     user_id = request.session.get('user_id')

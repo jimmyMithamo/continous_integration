@@ -72,9 +72,15 @@
                                 <li><a class="dropdown-item" href="{% url 'address' %}">Address book</a></li>
                                 <li><a class="dropdown-item" href="#">Favourites</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <div class="container d-flex flex-column justify-content-center">
-                                    <a href="{% url 'logout' %}"><button class="btn btn-danger">Logout</button></a>
-                                </div>
+                                {% if request.session.guest_logged_in %}
+                                    <div class="container d-flex flex-column justify-content-center">
+                                        <a href="{% url 'login_page' %}"><button class="btn btn-danger">Login</button></a>
+                                    </div>
+                                {% else %}
+                                    <div class="container d-flex flex-column justify-content-center">
+                                        <a href="{% url 'logout' %}"><button class="btn btn-danger">Logout</button></a>
+                                    </div>
+                                {% endif %}
                             </ul>
                         </li>
                     {% else %}
