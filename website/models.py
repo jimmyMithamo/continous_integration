@@ -18,6 +18,9 @@ class Product(models.Model):
     category = models.CharField(max_length=100)
     description = models.TextField()
     image = models.ImageField(upload_to='products/')
+    stars = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
+    
 
     def __str__(self):
         return self.name
@@ -80,4 +83,4 @@ class OrderItem(models.Model):
     def get_total_price(self):
         return self.quantity * self.price
     
-#model for order class
+
