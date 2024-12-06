@@ -3,8 +3,18 @@
 {% block side_content %}
 <style>
     #orders {
-            display: none; /* Initially hidden */
-        }
+        display: none; /* Initially hidden */
+    }
+    
+    #transit_orders {
+        display: none; /* Initially hidden */
+    }
+    #completed_orders {
+        display: none; /* Initially hidden */
+    }
+    #cancelled_orders {
+        display: none; /* Initially hidden */
+    }
 </style>
 <div class="d-none d-md-block">
     {% if order_items %}
@@ -17,117 +27,276 @@
                 <div class="col-md-2">Order Status</div>
                 <div class="col-md-2">Actions</div>   
             </div>
-                {% for order in orders %}
-                    <div class="row border-bottom-0 border">
-                        <div class="col-md-6 ">
-                            Order No. {{ order.id }}
-                        </div>
-                        <div class="col-md-6 ">
-                            order date : {{ order.order_date }}
-                        </div>
+            {% for order in orders %}
+                <div class="row border-bottom-0 border">
+                    <div class="col-md-6 ">
+                        Order No. {{ order.id }}
                     </div>
-                    
-                    {% for order_item in order_items %}
+                    <div class="col-md-6 ">
+                        order date : {{ order.order_date }}
+                    </div>
+                </div>
+                {% for order_item in order_items %}
                     {% if order_item.order_id == order.id %}
-                    <div class="row border mb-2">
-                        <div class="col-md-1 mt-1">
-                            <img src="{{ order_item.product.image.url }}" class="card-img-top" alt="..." style="height: 100%; width: 100%; object-fit: cover;">
-                        </div>
-                        <div class="col-md-5 mt-1">
-                            <div class="row">
-                                <div class="col-md-6">{{ order_item.product.name }}</div>
-                                <div class="col-md-6">{{ order_item.product.description }}</div>
+                        <div class="row border mb-2">
+                            <div class="col-md-1 mt-1">
+                                <img src="{{ order_item.product.image.url }}" class="card-img-top" alt="..." style="height: 100%; width: 100%; object-fit: cover;">
+                            </div>
+                            <div class="col-md-5 mt-1">
+                                <div class="row">
+                                    <div class="col-md-6">{{ order_item.product.name }}</div>
+                                    <div class="col-md-6">{{ order_item.product.description }}</div>
+                                </div>
+                            </div>
+                            <div class="col-2 mt-1">{{ order_item.get_total_price }}</div>
+                            <div class="col-2 mt-1">{{ order.status }}</div>
+                            <div class="col-2 mt-1">
+                                <a href=""><div class="btn btn-success btn-sm">Track order</div></a>
                             </div>
                         </div>
-                        <div class="col-2 mt-1">{{ order_item.get_total_price }}</div>
-                        <div class="col-2 mt-1">{{ order.status }}</div>
-                        <div class="col-2 mt-1">
-                            <a href=""><div class="btn btn-success btn-sm">Track order</div></a>
-                        </div>
-                    </div>
                     {% endif %}
-                    {% endfor %}
                 {% endfor %}
-
-            </div>
-    
+            {% endfor %}
+        </div>
     {% else %}
-    <div class="row">
-        <div class="col-12 d-flex flex-row justify-content-center">
-            <h2 class="text-dark">Ooops, You have no orders</h2>     
-       </div> 
-       <div class="col-12 h-50 d-flex flex-row justify-content-center">
-        <img src="{% static 'images/no_order.jpeg' %}" class="d-block w-50 c-img" alt="...">
-       </div>    
-       <div class="col-md-12 d-flex flex-row justify-content-start">
-        <a href="/" class="nav-link text-dark lead">Continue shopping</a>
-     </div> 
-    </div>
+        <div class="row">
+            <div class="col-12 d-flex flex-row justify-content-center">
+                <h2 class="text-dark">Ooops, You have no orders</h2>     
+            </div> 
+            <div class="col-12 h-50 d-flex flex-row justify-content-center">
+                <img src="{% static 'images/no_order.jpeg' %}" class="d-block w-50 c-img" alt="...">
+            </div>    
+            <div class="col-md-12 d-flex flex-row justify-content-start">
+                <a href="/" class="nav-link text-dark lead">Continue shopping</a>
+            </div> 
+        </div>
     {% endif %}
 </div>
-             
-
-
-
-
 <script>
-    function showContent(contentId) {
-        // Hide all content sections
-        const sections = document.querySelectorAll('.content-section');
-        sections.forEach(section => {
-            section.style.display = 'none';
-        });
-        
-        // Show the selected content section
-        const selectedSection = document.getElementById(contentId);
-        if (selectedSection) {
-            selectedSection.style.display = 'block';
-        }
-
-        // Update active link
-        const links = document.querySelectorAll('.nav-link');
-        links.forEach(link => {
-            link.classList.remove('active');
-        });
-        document.querySelector(`[onclick="showContent('${contentId}')"]`).classList.add('active');
+function showContent(contentId) {
+    // Hide all content sections
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show the selected content section
+    const selectedSection = document.getElementById(contentId);
+    if (selectedSection) {
+        selectedSection.style.display = 'block';
     }
+
+    // Update active link
+    const links = document.querySelectorAll('.nav-link');
+    links.forEach(link => {
+        link.classList.remove('active');
+    });
+    document.querySelector(`[onclick="showContent('${contentId}')"]`).classList.add('active');
+}
 </script>
 {% endblock %}
 
 {% block phone_content %}
-
 <div class=" d-md-none" id="orders" style="background-color: rgb(240, 244, 248); height: 100vh;">
     <div class=""  style="background-color: rgb(240, 244, 248);">
-        <ul class="nav nav-pills d-flex flex-row justify-content-evenly bg-dark">
+        <ul class="nav d-flex flex-row justify-content-evenly bg-dark">
             <li class="nav-item">
-                <a class="nav-link btn "  tabindex="-1" aria-disabled="true">Received</a>
-            </li>
-    
-            <li class="nav-item">
-                <a class="nav-link btn" >In Transit</a>
+                <a class="nav-link btn" onclick="show_received_orders()">Received</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link btn">Completed</a>
+                <a class="nav-link btn" onclick="show_transit_orders()">In Transit</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link btn">Cancelled</a>
+                <a class="nav-link btn" onclick="show_completed_orders()">Completed</a>
             </li>
-            
-          </ul>
+            <li class="nav-item">
+                <a class="nav-link btn" onclick="show_cancelled_orders()">Cancelled</a>
+            </li>
+        </ul>
     </div>
+    <div class="container" id="received_orders">
+        {% for order in orders %}
+            {% for order_item in order_items %}
+                {% if order_item.order_id == order.id %}
+                    {% if order.status == 'RECEIVED' %}
+                        <div class="row justify-content-start d-flex flex-row text-end border border-rounded mb-3">
+                            <div class="col-8 text-start">
+                                <span class="fs-6">Order No. {{ order.id }}</span>
+                            </div>
+                            <div class="col-4">
+                                <span class="fs-6">Received</span>
+                            </div>
+                            <div class="col-2 m-1">
+                                <img src="{{ order_item.product.image.url }}" class="card-img-top rounded" style="width: 80px; height: auto; object-fit: cover;">
+                            </div>
+                            <div class="col-8 text-start ms-2">
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ order_item.product.name }}
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-6">
+                                            {{ order_item.quantity }} (Items)
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span class="text-danger fw-bold">Ksh. {{ order_item.get_total_price }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div class="container" id="transit_orders">
+        {% for order in orders %}
+            {% for order_item in order_items %}
+                {% if order_item.order_id == order.id %}
+                    {% if order.status == 'In transit' %}
+                        <div class="row justify-content-start d-flex flex-row text-end border border-rounded mb-3">
+                            <div class="col-8 text-start">
+                                <span class="fs-6">Order No. {{ order.id }}</span>
+                            </div>
+                            <div class="col-4">
+                                <span class="fs-6">In Transit</span>
+                            </div>
+                            <div class="col-2 m-1">
+                                <img src="{{ order_item.product.image.url }}" class="card-img-top rounded" style="width: 80px; height: auto; object-fit: cover;">
+                            </div>
+                            <div class="col-8 text-start ms-2">
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ order_item.product.name }}
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-6">
+                                            {{ order_item.quantity }} (Items)
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span class="text-danger fw-bold">Ksh. {{ order_item.get_total_price }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div class="container" id="completed_orders">
+        {% for order in orders %}
+            {% for order_item in order_items %}
+                {% if order_item.order_id == order.id %}
+                    {% if order.status == 'COMPLETED' %}
+                        <div class="row justify-content-start d-flex flex-row text-end border border-rounded mb-3">
+                            <div class="col-8 text-start">
+                                <span class="fs-6">Order No. {{ order.id }}</span>
+                            </div>
+                            <div class="col-4">
+                                <span class="fs-6">Completed</span>
+                            </div>
+                            <div class="col-2 m-1">
+                                <img src="{{ order_item.product.image.url }}" class="card-img-top rounded" style="width: 80px; height: auto; object-fit: cover;">
+                            </div>
+                            <div class="col-8 text-start ms-2">
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ order_item.product.name }}
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-6">
+                                            {{ order_item.quantity }} (Items)
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span class="text-danger fw-bold">Ksh. {{ order_item.get_total_price }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div class="container" id="cancelled_orders">
+        {% for order in orders %}
+            {% for order_item in order_items %}
+                {% if order_item.order_id == order.id %}
+                    {% if order.status == 'CANCELED' %}
+                        <div class="row justify-content-start d-flex flex-row text-end border border-rounded mb-3">
+                            <div class="col-8 text-start">
+                                <span class="fs-6">Order No. {{ order.id }}</span>
+                            </div>
+                            <div class="col-4">
+                                <span class="fs-6">Cancelled</span>
+                            </div>
+                            <div class="col-2 m-1">
+                                <img src="{{ order_item.product.image.url }}" class="card-img-top rounded" style="width: 80px; height: auto; object-fit: cover;">
+                            </div>
+                            <div class="col-8 text-start ms-2">
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ order_item.product.name }}
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-6">
+                                            {{ order_item.quantity }} (Items)
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span class="text-danger fw-bold">Ksh. {{ order_item.get_total_price }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
 </div>
-
-
 <script>
+    function show_received_orders() {
+        document.getElementById('received_orders').style.display = 'block';
+        document.getElementById('transit_orders').style.display = 'none';
+        document.getElementById('transit_orders').style.display = 'none';
+        document.getElementById('completed_orders').style.display = 'none';
+        document.getElementById('cancelled_orders').style.display = 'none';
+    }
+    function show_transit_orders() {
+        document.getElementById('received_orders').style.display = 'none';
+        document.getElementById('transit_orders').style.display = 'block';
+        document.getElementById('completed_orders').style.display = 'none';
+        document.getElementById('cancelled_orders').style.display = 'none';
+    }
+    function show_completed_orders() {
+        document.getElementById('received_orders').style.display = 'none';
+        document.getElementById('transit_orders').style.display = 'none';
+        document.getElementById('completed_orders').style.display = 'block';
+        document.getElementById('cancelled_orders').style.display = 'none';
+    }
+    function show_cancelled_orders() {
+        document.getElementById('received_orders').style.display = 'none';
+        document.getElementById('transit_orders').style.display = 'none';
+        document.getElementById('completed_orders').style.display = 'none';
+        document.getElementById('cancelled_orders').style.display = 'block';
+    }
+
 document.addEventListener('DOMContentLoaded', function() {
-            var showOrders = localStorage.getItem('showOrders');
-            if (showOrders === 'true') {
-                document.getElementById('orders').style.display = 'block';
-                // Clear the flag so it doesn't show on subsequent visits
-                localStorage.removeItem('showOrders');
-            }
-        });
-
-
+    var showOrders = localStorage.getItem('showOrders');
+    if (showOrders === 'true') {
+        document.getElementById('orders').style.display = 'block';
+        // Clear the flag so it doesn't show on subsequent visits
+        localStorage.removeItem('showOrders');
+    }
+});
 </script>
 {% endblock %}
