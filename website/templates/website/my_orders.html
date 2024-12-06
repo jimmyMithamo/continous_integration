@@ -97,20 +97,24 @@
 {% block phone_content %}
 
 <div class="container d-md-none" id="orders" style="background-color: rgb(240, 244, 248); height: 100vh;">
-    <ul class="nav bg-info">
-        <li class="nav-item">
-          <a class="nav-link active text-dark" aria-current="page" href="#" style="display: inline-block;">Received</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="#" style="display: inline-block;">In transit</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="#" style="display: inline-block;">Completed</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled text-success" href="#" tabindex="-1" aria-disabled="true" style="display: inline-block;">Completed</a>
-        </li>
-    </ul>
+    <div class="container"  style="background-color: rgb(240, 244, 248);">
+        <ul class="nav nav-pills d-flex flex-row justify-content-evenly bg-dark">
+            <li class="nav-item">
+                <a class="nav-link btn "  tabindex="-1" aria-disabled="true">Received</a>
+            </li>
+    
+            <li class="nav-item">
+                <a class="nav-link btn" >In Transit</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn">Completed</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn">Cancelled</a>
+            </li>
+            
+          </ul>
+    </div>
 </div>
 
 
