@@ -1,0 +1,38 @@
+{% extends 'website/account.html' %}
+{% load static %}
+{% block phone_content %}
+
+<style>
+    #profile_image {
+        display: block; /* Initially hidden */
+    }
+</style>
+<div class="container " id="profile_image">
+    <div class="row">
+        <div class="col-12 mt-1">
+            <h6 class="fw-bold text-center">Profile Image</h6>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 justify-content-center d-flex">
+            <img src="{{ user.profile.image.url }}"
+            onerror="this.onerror=null;this.src='{% static '/images/default1.jpeg' %}';"
+            class="card-img-top border border-dark border-rounded border-1 rounded-circle"
+            alt="User Profile Image"
+            style="width: 100px; height: auto; object-fit: cover;">
+        </div>
+        <div class="d-flex flex-row justify-content-center mt-1">
+            <button type="button" class="btn btn-transparent text-danger  btn-sm w-10" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <span class="fs-6">Change photo</span>
+            </button>
+        </div>
+           
+
+
+    </div>
+</div>
+
+
+
+{% endblock %}

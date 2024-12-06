@@ -1,8 +1,12 @@
 {% extends 'website/account.html' %}
 {% load static %}
 {% block side_content %}
-
-<div>
+<style>
+    #orders {
+            display: none; /* Initially hidden */
+        }
+</style>
+<div class="d-none d-md-block">
     {% if order_items %}
         <h6 class="fw-bold text-center">My Orders</h6>
         <hr>
@@ -26,13 +30,13 @@
                     {% for order_item in order_items %}
                     {% if order_item.order_id == order.id %}
                     <div class="row border mb-2">
-                        <div class="col-1 mt-1">
+                        <div class="col-md-1 mt-1">
                             <img src="{{ order_item.product.image.url }}" class="card-img-top" alt="..." style="height: 100%; width: 100%; object-fit: cover;">
                         </div>
-                        <div class="col-5 mt-1">
+                        <div class="col-md-5 mt-1">
                             <div class="row">
-                                <div class="col-6">{{ order_item.product.name }}</div>
-                                <div class="col-6">{{ order_item.product.description }}</div>
+                                <div class="col-md-6">{{ order_item.product.name }}</div>
+                                <div class="col-md-6">{{ order_item.product.description }}</div>
                             </div>
                         </div>
                         <div class="col-2 mt-1">{{ order_item.get_total_price }}</div>
@@ -61,6 +65,10 @@
     </div>
     {% endif %}
 </div>
+             
+
+
+
 
 <script>
     function showContent(contentId) {
@@ -83,5 +91,43 @@
         });
         document.querySelector(`[onclick="showContent('${contentId}')"]`).classList.add('active');
     }
+</script>
+{% endblock %}
+
+{% block phone_content %}
+
+<div class="container d-md-none " id = 'orders' style="background-color: rgb(240, 244, 248); height: 100vh;">
+    <ul class="nav justify-content-evenly bg-info ">
+        <li class="nav-item">
+          <a class="nav-link active text-dark" aria-current="page" href="#">Received</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="#">In transit</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="#">Completed</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled text-success" href="#" tabindex="-1" aria-disabled="true">Completed</a>
+        </li>
+      </ul>
+</div>
+
+<div class="container d-md-none" id="profilecontent">
+    my profile photo
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+            var showOrders = localStorage.getItem('showOrders');
+            if (showOrders === 'true') {
+                document.getElementById('orders').style.display = 'block';
+                // Clear the flag so it doesn't show on subsequent visits
+                localStorage.removeItem('showOrders');
+            }
+        });
+
+
 </script>
 {% endblock %}

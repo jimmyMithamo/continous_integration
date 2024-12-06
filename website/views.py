@@ -12,6 +12,7 @@ import uuid
 
 # Create your views here.
 def home(request):
+    print('not logged in',request.session.get('logged_in'))
     products = Product.objects.all()
     logged_in = request.session.get('logged_in', False)
     user_id = request.session.get('user_id')
@@ -19,7 +20,6 @@ def home(request):
     print(user_id, username)
 
     context = {
-        'logged_in': logged_in,
         'user_id': user_id,
         'username': username,
         'products': products
@@ -58,6 +58,7 @@ def login(request):
             
             if guest_user:
                 guest_user = User.objects.get(id=guest_user)
+                print('guest user', guest_user)
                 #transfer cart items to user
                 cart = Cart.objects.get(user=guest_user)
                 if cart:
@@ -119,6 +120,8 @@ def login_page(request):
 
 #signup_page function
 def signup_page(request):
+    print("no user", request.session.get('logged_in'))
+    print("no guest",request.session.get('guest_logged_in'))
     return render(request, 'website/register.html')
 
 User = get_user_model()
@@ -135,14 +138,20 @@ def signup(request):
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Email already exists')
             return redirect('signup_page')
-        
-        if request.session.get('logged_in') and request.session.get('guest_logged_in') == False:
+        if User.objects.filter(username=username).exists():
+            messages.warning(request, 'Username already exists')
+            return redirect('signup_page')
+        user_logged_in = request.session.get('logged_in')
+        guest_logged_in = request.session.get('guest_logged_in')
+        if not user_logged_in and not guest_logged_in:
+            print('no guest account')
             user = User(first_name=first_name, last_name=last_name, email=email ,username=username)
             user.set_password(password)
             user.save()
             messages.success(request, 'Account created successfully')
             return redirect('login_page')
         else:
+            print('guest account')
             #get guest user and transform to real user
             guest_user_id = request.session.get('user_id')
             if guest_user_id:
@@ -161,6 +170,19 @@ def signup(request):
         messages.error(request, 'Invalid request')
         return redirect('signup_page')
 
+def profile_Image(request):
+    user_id = request.session.get('user_id')
+    user = User.objects.get(id=user_id)
+    if user.username.startswith('Guest_'):
+        messages.error(request, 'Please login or create account to upload profile image')
+        return redirect('login_page')
+    else:
+        context = {
+            'user': user
+        }
+    return render(request, 'website/profile_image.html', context)
+
+
 def upload_image(request):
     if request.method == 'POST' and request.FILES.get('image'):
         try:
@@ -168,6 +190,7 @@ def upload_image(request):
             profile.image = request.FILES['image']
             profile.save()
             messages.success(request, 'Profile image updated successfully.')
+            return redirect('account')
         except Profile.DoesNotExist:
             messages.error(request, 'Profile not found.')
         return redirect('account')  
@@ -231,6 +254,7 @@ def cart(request):
         #create guest cart
         guest_user = create_guest_user()
         guest_user.save()
+        request.session['guest_logged_in'] = True
         request.session['logged_in'] = True
         request.session['user_id'] = guest_user.id
         request.session['username'] = guest_user.username.split('_')[0]
