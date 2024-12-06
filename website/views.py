@@ -136,7 +136,7 @@ def signup(request):
             messages.error(request, 'Email already exists')
             return redirect('signup_page')
         
-        if request.session.get('logged_in') == False:
+        if request.session.get('logged_in') and request.session.get('guest_logged_in') == False:
             user = User(first_name=first_name, last_name=last_name, email=email ,username=username)
             user.set_password(password)
             user.save()
@@ -145,13 +145,15 @@ def signup(request):
         else:
             #get guest user and transform to real user
             guest_user_id = request.session.get('user_id')
-            guest_user = User.objects.get(id=guest_user_id)        
-            guest_user.username = username
-            guest_user.email = email
-            guest_user.first_name = first_name
-            guest_user.last_name = last_name
-            guest_user.set_password(password)
-            guest_user.save()
+            if guest_user_id:
+                guest_user = User.objects.get(id=guest_user_id)        
+                guest_user.username = username
+                guest_user.email = email
+                guest_user.first_name = first_name
+                guest_user.last_name = last_name
+                guest_user.set_password(password)
+                guest_user.save()
+            
             messages.success(request, 'Account created successfully')
             return redirect('login_page')
         
