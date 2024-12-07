@@ -4,3 +4,47 @@
     my phone here
 </div>
 {% endblock %}
+
+{% block phone_content %}
+<div class="container">
+    <div class="col-12">
+        <div class="span fw-bold">Current phone</div>
+    </div>
+    <div class="col-12 mt-2 border border-rounded p-2">
+        {{ user.profile.phone_number }}
+    </div>
+</div>
+<hr>    
+<div class="container">
+    <div class="col-12">
+        <div class="span fw-bold">New phone</div>
+    </div>
+    <div class="col-12">
+        <div class="form-floating">
+            <input type="phone_number" class="form-control" id="floatingphone" placeholder="Enter your phone">
+            <label for="floatingphone">Phone Number</label>
+          </div>
+    </div>
+</div>
+<div class="container mt-2">
+    <div class="col-12">
+        <div class="span fw-bold">Code</div>
+    </div>
+    <div class="col-12">
+        <div class="input-group">
+          <div class="form-floating">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Enter phone code">
+                <button class="btn btn-outline-danger btn-small btn-rounded" type="button" id="button-addon2">Send</button>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="col-12 container">
+    <div class="btn w-100 bg-warning fw-bold" > Submit</div>
+</div>
+
+
+
+{% endblock %}

@@ -69,12 +69,12 @@
         <li class="nav-item">
             <a class="nav-link btn active" onclick="setFlag(event, '{% url 'profile_Image' %}')" tabindex="-1" aria-disabled="true">Profile</a>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown text-start">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
           <ul class="dropdown-menu">
-            <a class="nav-link btn" onclick="setFlag(event, '{% url 'orders' %}')" tabindex="-1" aria-disabled="true">Orders</a>
-            <a class="nav-link btn" onclick="setFlag(event, '{% url 'orders' %}')" tabindex="-1" aria-disabled="true">Orders</a>
-            <a class="nav-link btn" onclick="setFlag(event, '{% url 'orders' %}')" tabindex="-1" aria-disabled="true">Orders</a>
+            <a class="nav-link btn text-start" onclick="setFlag(event, '{% url 'address' %}')" tabindex="-1" aria-disabled="true">Address Book</a>
+            <a class="nav-link btn text-start" onclick="setFlag(event, '{% url 'phone_number' %}')" tabindex="-1" aria-disabled="true">Phone_number</a>
+            <a class="nav-link btn text-start" onclick="setFlag(event, '{% url 'email' %}')" tabindex="-1" aria-disabled="true">Email</a>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item " href="#"><button class="w-70 bg-danger text-dark ">Delete Account</button></a></li>
           </ul>
