@@ -98,6 +98,7 @@ function showContent(contentId) {
 
 {% block phone_content %}
 <div class=" d-md-none" id="orders" style="background-color: rgb(240, 244, 248); height: 100vh;">
+    {% if orders %}
     <div class=""  style="background-color: rgb(240, 244, 248);">
         <ul class="nav d-flex flex-row justify-content-evenly bg-dark">
             <li class="nav-item">
@@ -261,6 +262,19 @@ function showContent(contentId) {
             {% endfor %}
         {% endfor %}
     </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12 d-flex flex-row justify-content-center">
+                <h2 class="text-dark">Ooops, You have no orders</h2>     
+            </div> 
+            <div class="col-12 h-50 d-flex flex-row justify-content-center">
+                <img src="{% static 'images/no_order.jpeg' %}" class="d-block w-50 c-img" alt="...">
+            </div>    
+            <div class="col-md-12 d-flex flex-row justify-content-start">
+                <a href="/" class="nav-link text-dark lead">Continue shopping</a>
+            </div> 
+        </div>
+    {% endif %}
 
 </div>
 <script>
