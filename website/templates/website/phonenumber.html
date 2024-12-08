@@ -1,12 +1,7 @@
 {% extends 'website/account.html' %}
-{% block side_content %}
-<div>
-    my phone here
-</div>
-{% endblock %}
 
-{% block phone_content %}
-<div class="container">
+{% block side_content %}{% block phone_content %}
+<div class="container d-block!">
     <div class="col-12">
         <div class="span fw-bold">Current phone</div>
     </div>
@@ -46,5 +41,5 @@
 </div>
 
 
-
+{% endblock %}
 {% endblock %}

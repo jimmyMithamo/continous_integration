@@ -1,18 +1,13 @@
 {% extends 'website/account.html' %}
-{% block side_content %}
-<div >
-    my adress here
-</div>
-{% endblock %}
 
 ```phone viewport
-{% block phone_content %}
-<section class="" style="background-color: rgb(245, 240, 234); height: 100vh;">
+{% block side_content %}{% block phone_content %}
+<section class="" style="height: 100vh;">
     <div class="row">
         <div class="col-12 bg-dark text-white d-flex flex-row justify-content-center">
             <h5 class="fw-bold m-1 p-2">Delivery address</h5>
         </div>
-        <div class="row m-2 bg-white" style="height: 20vh;">
+        <div class="row m-0 bg-white border container" style="height: 20vh;background-color: rgb(245, 240, 234);">
             <div class="col-4">
                 {{ user.first_name }} {{ user.last_name }}
             </div>
@@ -23,11 +18,8 @@
                 {{ user.profile.address }}
             </div>
             <div class="row">
-                <div class="col-1">
-                    <input type="radio" name="address" id="address" value="address">
-                </div>
-                <div class="col-5">
-                    Set default address
+                <div class="col-6">
+                    Default address
                 </div>
                 <div class="col-2 text-end">
                     <a class="btn btn-transparent text-danger">Edit</a>
@@ -38,9 +30,9 @@
             </div>
         </div>
     </div>
-    <div class="nav nav-footer fixed-bottom" style="background-color: rgb(226, 40, 7); justify-content: center;">
+    <div class="nav nav-footer fixed-bottom container" style="background-color: rgb(226, 40, 7); justify-content: center;">
         <div class="btn fw-bold text-white">+ Add New Address</div>
     </div>
    
 </section>
-{% endblock %}
+{% endblock %}{% endblock %}

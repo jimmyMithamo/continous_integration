@@ -45,7 +45,8 @@
                       <li><a class="dropdown-item" href="{% url 'phone_number' %}" >Phone Number</a></li>
                       <li><a class="dropdown-item" href="{% url 'email' %}" >Email</a></li>
                       <li><a class="dropdown-item" href="{% url 'password' %}" >Password settings</a></li>
-                      <li><a class="dropdown-item" href="#">Profile Image</a></li>
+                      <hr>
+                        <li><a class="dropdown-item" href="#"><button class="w-70 bg-danger text-dark ">Delete Account</button></a></li>
                     </ul>
                 </div>
                 <a href="{% url 'orders' %}">
@@ -60,6 +61,7 @@
                 {% block side_content %}
                 {% endblock %}
                </div>
+
             </div>
         </div>
     </div>
@@ -90,6 +92,7 @@
       <div class="">
         {% block phone_content %}
         {% endblock %}
+        
       </div>
 </section>
 

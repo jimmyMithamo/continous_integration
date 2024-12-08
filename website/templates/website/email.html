@@ -1,6 +1,45 @@
 {% extends 'website/account.html' %}
-{% block side_content %}
-<div>
-    my email here
+
+{% block side_content %}{% block phone_content %}
+<div class="container d-block!">
+    <div class="col-12">
+        <div class="span fw-bold">Current email</div>
+    </div>
+    <div class="col-12 mt-2 border border-rounded p-2">
+        {{ user.email }}
+    </div>
 </div>
+<hr>    
+<div class="container">
+    <div class="col-12">
+        <div class="span fw-bold">New Email</div>
+    </div>
+    <div class="col-12">
+        <div class="form-floating">
+            <input type="email_address" class="form-control" id="floating email" placeholder="Enter new email">
+            <label for="floatingemail">New Email address</label>
+          </div>
+    </div>
+</div>
+<div class="container mt-2">
+    <div class="col-12">
+        <div class="span fw-bold">Code</div>
+    </div>
+    <div class="col-12">
+        <div class="input-group">
+          <div class="form-floating">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Enter email code">
+                <button class="btn btn-outline-danger btn-small btn-rounded" type="button" id="button-addon2">Send</button>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="col-12 container">
+    <div class="btn w-100 bg-warning fw-bold" > Submit</div>
+</div>
+
+
+{% endblock %}
 {% endblock %}
