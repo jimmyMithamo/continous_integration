@@ -204,7 +204,10 @@ def create_guest_user():
     guest_user = User.objects.create_user(username=user)
     guest_user.save()
     return guest_user
-
+#buy now function leads to checkout
+def buy_now(request, id):
+    add_to_cart(request, id)
+    return redirect('checkout')
 
 
 def add_to_cart(request, id):
