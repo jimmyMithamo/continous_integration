@@ -82,8 +82,9 @@ def login(request):
                             for cart_item in cart_items:
                                 if cart_item.product in user_cart_products:
                                     user_cart_item = CartItem.objects.get(cart=cart, product=cart_item.product, processed=False)
-                                    user_cart_item.quantity += cart_item.quantity
-                                    user_cart_item.save()
+                                    if user_cart_item:
+                                        user_cart_item.quantity += cart_item.quantity
+                                        user_cart_item.save()
                                     messages.success(request, 'A new item was added to existing product')
                                 else:
                                     cart_item.cart = cart

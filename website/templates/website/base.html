@@ -19,7 +19,7 @@
 
         @media (min-width: 992px) {
             .quickpick-brand {
-                font-size: 1.9rem;md-block
+                font-size: 1.9rem;
             }
         }
 
@@ -57,7 +57,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <form class="d-flex mx-auto w-100 mt-sm-10 me-2 ms-3 align-items-center" id="searchbar">
-                <input class="form-control me-2" type="search" placeholder="Search item...">
+                <input class="form-control me-2" type="search" placeholder="Search item..." id="searchInput">
                 <button class="btn btn-danger" type="submit">Search</button>
             </form>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -90,7 +90,7 @@
                         </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link fw-bold" href="{% url 'cart' %}" id="cart-link">Cart</a>
+                        <a class="nav-link fw-bold" href="{% url 'cart' %}" id="cart-link"><i class="bi bi-bag-check-fill w-10"></i></a>
                     </li>
                 </ul>
             </div>
@@ -109,5 +109,27 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+    <div class="script">
+        <script>
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+            let search = e.target.value.toLowerCase();
+            let items = document.querySelectorAll('.product-item');
+            
+            items.forEach(function(item) {
+                let productName = item.querySelector('.card-title').textContent.toLowerCase();
+                if (productName.includes(search)) {
+                    item.style.display = 'block'; // Show the product if it matches the search
+                } else {
+                    item.style.display = 'none'; // Hide the product if it doesn't match
+                }
+            });
+        });
+
+        document.getElementById('searchbar').addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+        </script>
+    </div>
 </body>
 </html>
